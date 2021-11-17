@@ -1,0 +1,17 @@
+.header {
+    background: #aaa;
+    min-height: 20px;
+}
+
+.site-layout-content {
+    height: 480px;
+    width: 350px;
+    margin: auto;
+    padding: 24px;
+    background: #fff;
+}
+
+.camera {
+    margin-left: 155px;
+    margin-top: 200px;
+}
