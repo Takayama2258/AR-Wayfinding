@@ -7,7 +7,8 @@ import {
 } from "react-router-dom";
 
 import  Home  from './components/Home/Home';
-import  Camera  from "./components/Camera/Camera"
+import  ThreexComp  from "./components/Camera/ThreexComp"
+import Camera from "./components/Camera/Camera";
 
 const App = () => (
   <Router>

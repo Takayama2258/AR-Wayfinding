@@ -28,15 +28,15 @@ function Home(props){
   // 获取目标方位
   const handleClick = ()=>{
     // 数据库
-    // fetch( `http://10.68.42.82:3001/v1/api/search?source=${id}&destination=${dest}`, { method: "GET"})
-    // .then(res => res.json())
-    // .then(data => {
-    //     setNavi(data.data.Direction);
-    //     console.log(data);
-    // })
-    // .catch((error) => {
-    //   console.error("Error fetching data: ", error);
-    // })
+    fetch( `http://10.68.9.163:3001/v1/api/search?source=${id}&destination=${dest}`, { method: "GET"})
+    .then(res => res.json())
+    .then(data => {
+        setNavi(data.data.Direction);
+        console.log(data);
+    })
+    .catch((error) => {
+      console.error("Error fetching data: ", error);
+    })
 
     // router跳转 有bug
     // <Redirect to={`/camera`}/>
@@ -66,10 +66,8 @@ function Home(props){
     let degree = e.webkitCompassHeading || Math.abs(e.alpha - 360);
   
     if (
-        (compass < Math.abs(degree) &&
-        compass + 15 > Math.abs(degree)) ||
-        compass > Math.abs(degree + 15) ||
-        compass < Math.abs(degree)
+        (compass + 15 < Math.abs(degree)) ||
+        compass > Math.abs(degree + 15)
       ){
         setCompass(degree);
       }
@@ -88,10 +86,10 @@ function Home(props){
           <div className="loc">You are now at: location{id}</div>
           <div className="des">What's your destination?</div>
           <select value={dest} onChange={(e)=>(setDest(e.target.value))}>
-            <option value="0">Location 0</option>
-            <option value="1">Location 1</option>
-            <option value="2">Location 2</option>
-            <option value="3">Location 3</option>
+            <option value="0">Location 1</option>
+            <option value="1">Location 2</option>
+            <option value="2">Location 3</option>
+            <option value="3">Location 4</option>
           </select>
 
           {/* <Link to = {`/camera/${navi}`}> 跳转到ar camera*/}
