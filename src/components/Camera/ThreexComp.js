@@ -11,41 +11,12 @@ export default class ThreexComp extends React.Component {
 	}
 
     componentDidMount() {
-		console.log(this.props);
-		const degree = 0;
-		// const isIOS = navigator.userAgent.match(/(iPod|iPhone|iPad)/) && navigator.userAgent.match(/AppleWebKit/);
-
-		// const handler=(e)=> {
-		// 	let newCompass = e.webkitCompassHeading || Math.abs(e.alpha - 360);
-		  
-		// 	if (
-		// 		(this.state.compass + 15 < Math.abs(newCompass)) ||
-		// 		this.state.compass > Math.abs(newCompass + 15) 
-		// 	  ){
-		// 		this.setState({compass :newCompass});
-		// 	  }
-		//   }
-
-		// if (isIOS) {
-		// 	DeviceOrientationEvent.requestPermission()
-		// 	.then((response) => {
-		// 		if (response === "granted") {
-		// 		window.addEventListener("deviceorientation", handler, true);
-		// 		} else {
-		// 		alert("has to be allowed!");
-		// 		}
-		// 	})
-		// 	.catch(() => alert("not supported"));
-		// }
-		// if (!isIOS) {
-		// 	window.addEventListener("deviceorientationabsolute", handler, true);
-		// }
-
+		console.log("three:::props:::",this.props);
 
         ArToolkitContext.baseURL = './'
         // init renderer
 	    var renderer	= new THREE.WebGLRenderer({
-		    // antialias	: true,
+		    antialias	: true,
 		    alpha: true
 	    });
 	    renderer.setClearColor(new THREE.Color('lightgrey'), 0)
@@ -133,50 +104,26 @@ export default class ThreexComp extends React.Component {
 	    var markerScene = new THREE.Scene()
 	    markerGroup.add(markerScene)
 
-	    var mesh = new THREE.AxesHelper()
-	    markerScene.add(mesh)
-
-		// const loader = new GLTFLoader();
+		const loader = new GLTFLoader();
+		var model;
 		
-		// loader.load( '../arrow/scene.gltf', function ( gltf ) {
-		// 	markerScene.add( gltf.scene );
-		// }, undefined, function ( error ) {
-		// 	console.error( error );
-		// } );
-
-	    // add a torus knot
-		console.log("compass::::", this.state.compass);
-		console.log("degree::::", degree);
-
-		if (Math.abs(this.props.result) < 180){
-			alert("compass<180")
-			var geometry	= new THREE.BoxGeometry(1,1,1);
-			var material	= new THREE.MeshNormalMaterial({
-				transparent : true,
-				opacity: 0.5,
-				side: THREE.DoubleSide
-			});
-			var mesh	= new THREE.Mesh( geometry, material );
-			mesh.position.y	= geometry.parameters.height/2
-			markerScene.add(mesh)
-		}
-	    
-		else{
-			var geometry	= new THREE.TorusKnotGeometry(0.3,0.1,64,16);
-			var material	= new THREE.MeshNormalMaterial();
-			var mesh	= new THREE.Mesh( geometry, material );
-			mesh.position.y	= 0.5
-			markerScene.add(mesh);
-		}
-
-	    onRenderFcts.push(function(delta){
-		    mesh.rotation.x += delta * Math.PI
-	    })
+		loader.load( '../../data/arrow/scene.gltf', function ( gltf ) {
+			model = gltf.scene;
+			markerScene.add( model );
+		}, function ( xhr ) {
+			console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+		}, function ( error ) {
+			console.error( error );
+		} );
 
         //////////////////////////////////////////////////////////////////////////////////
 	    //		render the whole thing on the page
 	    //////////////////////////////////////////////////////////////////////////////////
-	    onRenderFcts.push(function(){
+	    onRenderFcts.push(()=>{
+			if(model){
+				model.rotation.x = -1.57;
+				model.rotation.y = (this.props.angle+180)/57.29578;
+			}
 		    renderer.render( scene, camera );
 	    })
 

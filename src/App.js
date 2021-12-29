@@ -1,46 +1,39 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link
 } from "react-router-dom";
 
+import { AppContext } from "./components/AppContext";
+
 import  Home  from './components/Home/Home';
-import  ThreexComp  from "./components/Camera/ThreexComp"
+// import  ThreexComp  from "./components/Camera/ThreexComp"
 import Camera from "./components/Camera/Camera";
+import Dashboard from "./components/Dashboard/Dashboard";
 
-const App = () => (
-  <Router>
-    <Switch>
-      <Route exact path="/">
-        <Dashboard />
-      </Route>
-      <Route path="/home/:id">
-        <Home />
-      </Route>
-      <Route path="/camera/:degree">
-        <Camera />
-      </Route>
-    </Switch>
-  </Router>
-);
+function App(props){
+  const [angle, setAngle] = useState(0);
+  const settingAngle = (v)=> {
+    setAngle(v);
+  }
 
-function Dashboard() {
-  return (
-    <div>
-      <h2>Index</h2>
-      <Router>
-      <ul>
-          <li>
-             <Link to="/home/1">Home</Link>
-          </li>
-          <li>
-            <Link to="/camera/0">Camera</Link>
-          </li>
-        </ul>
-      </Router>
-    </div>
+  return(
+    <Router>
+      <Switch>
+        <Route exact path="/">
+          <Dashboard />
+        </Route>
+        <Route path="/home/:id">
+        <AppContext.Provider value={{angle, settingAngle}}>
+          <Home /></AppContext.Provider>
+        </Route>
+        <Route path="/camera">
+          <AppContext.Provider value={{angle, settingAngle}}>
+          <Camera /></AppContext.Provider>
+        </Route>
+      </Switch>
+    </Router>
   );
 }
 

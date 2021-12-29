@@ -1,80 +1,42 @@
 import { Layout, Button } from 'antd';
 import './Home.css';
 import { CameraOutlined} from '@ant-design/icons';
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 
+import { AppContext } from "../AppContext";
 import ReactDOM from 'react-dom';
 
 import {
   useParams,
-  Link, 
-  Redirect,
   withRouter
 } from "react-router-dom";
 
 const { Header, Content, Footer } = Layout;
 
 
-function Home(props){
+const Home =(props)=>{
 
   const { id } = useParams();
 
-  const [navi, setNavi] = useState(90);
   const [dest, setDest] = useState('0');
-  const [compass, setCompass] = useState(0);
-
-  const isIOS = navigator.userAgent.match(/(iPod|iPhone|iPad)/) && navigator.userAgent.match(/AppleWebKit/);
+  const {angle, settingAngle} = useContext(AppContext);
 
   // 获取目标方位
-  const handleClick = ()=>{
+  const handleClick = () => {
     // 数据库
-    fetch( `http://10.68.9.163:3001/v1/api/search?source=${id}&destination=${dest}`, { method: "GET"})
+    fetch( `https://fyp21043s1.cs.hku.hk:3001/v1/api/search?source=${id}&destination=${dest}`, { method: "GET"})
     .then(res => res.json())
     .then(data => {
-        setNavi(data.data.Direction);
-        console.log(data);
+      settingAngle(data.data.Angle);
+        console.log(data.data.Angle);
     })
     .catch((error) => {
       console.error("Error fetching data: ", error);
     })
-
-    // router跳转 有bug
-    // <Redirect to={`/camera`}/>
-    // this.props.history.replace('/camera');
-
-    startCompass(); //东南西北testing
   };
-  
-
-  function startCompass() {
-    if (isIOS) {
-      DeviceOrientationEvent.requestPermission()
-        .then((response) => {
-          if (response === "granted") {
-            window.addEventListener("deviceorientation", handler, true);
-          } else {
-            alert("has to be allowed!");
-          }
-        })
-        .catch(() => alert("not supported"));
-    }
-    if (!isIOS) {
-      window.addEventListener("deviceorientationabsolute", handler, true);
-    }
-  }
-  function handler(e) {
-    let degree = e.webkitCompassHeading || Math.abs(e.alpha - 360);
-  
-    if (
-        (compass + 15 < Math.abs(degree)) ||
-        compass > Math.abs(degree + 15)
-      ){
-        setCompass(degree);
-      }
-  }
 
   return (
-    <>
+    <div>
     <Layout className="layout">
       <Header className="header">
         <div className="logo">AR Wayfinding</div>
@@ -92,23 +54,18 @@ function Home(props){
             <option value="3">Location 4</option>
           </select>
 
-          {/* <Link to = {`/camera/${navi}`}> 跳转到ar camera*/}
-              <Button onClick={handleClick}>Show direction</Button>
-          {/* </Link> */}
+          <Button onClick={handleClick}>Show direction</Button>
 
-          {/* 东南西北testing 只有手机能看到*/}
-          <div>The direction is: {navi}</div>
-          <div>device orientation is: {compass}</div>
-          <div>target orientation is: {compass-navi}</div>
+          <div>The direction is: {angle}</div>
 
-          <div className="camera"><Button icon={<CameraOutlined />}></Button></div>
+          <div className="camera"><Button icon={<CameraOutlined />} onClick={()=>{props.history.push("/camera")}}></Button></div>
         </div>
       </Content>
           
       <Footer style={{ textAlign: 'center' }}>AR Wayfinding Demo ©2021 Created by Stephen & Coco</Footer>
     </Layout>
-    </>
+    </div>
   );
 }
 
-export default Home;
+export default withRouter(Home);
