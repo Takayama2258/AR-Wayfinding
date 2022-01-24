@@ -84,6 +84,7 @@ export default class ThreexComp extends React.Component {
 		    arToolkitContext.update( arToolkitSource.domElement )
 	    })
 
+
         ////////////////////////////////////////////////////////////////////////////////
 	    //          Create a ArMarkerControls
 	    ////////////////////////////////////////////////////////////////////////////////
@@ -100,15 +101,20 @@ export default class ThreexComp extends React.Component {
 	    //		add an object in the scene
 	    //////////////////////////////////////////////////////////////////////////////////
 
-
 	    var markerScene = new THREE.Scene()
 	    markerGroup.add(markerScene)
 
 		const loader = new GLTFLoader();
 		var model;
 		
-		loader.load( '../../data/arrow/scene.gltf', function ( gltf ) {
+		loader.load( '../../data/arrow/scene.gltf', ( gltf ) => {
+			gltf.scene.scale.set(0.5,1,1);
 			model = gltf.scene;
+			if(model){
+				model.rotation.x = -1.2;
+				// model.rotation.y = 1.57;
+				model.rotation.y = 1.57-(this.props.angle)/57.29578;
+			}
 			markerScene.add( model );
 		}, function ( xhr ) {
 			console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
@@ -116,16 +122,14 @@ export default class ThreexComp extends React.Component {
 			console.error( error );
 		} );
 
+
         //////////////////////////////////////////////////////////////////////////////////
 	    //		render the whole thing on the page
 	    //////////////////////////////////////////////////////////////////////////////////
 	    onRenderFcts.push(()=>{
-			if(model){
-				model.rotation.x = -1.57;
-				model.rotation.y = (this.props.angle+180)/57.29578;
-			}
 		    renderer.render( scene, camera );
 	    })
+
 
         // run the rendering loop
 	    var lastTimeMsec= null
@@ -134,11 +138,11 @@ export default class ThreexComp extends React.Component {
 		    requestAnimationFrame( animate );
 		    // measure time
 		    lastTimeMsec	= lastTimeMsec || nowMsec-1000/60
-		    var deltaMsec	= Math.min(200, nowMsec - lastTimeMsec)
+		    var deltaMsec	= Math.min(1000, nowMsec - lastTimeMsec)
 		    lastTimeMsec	= nowMsec
 		    // call each update function
 		    onRenderFcts.forEach(function(onRenderFct){
-			    onRenderFct(deltaMsec/1000, nowMsec/1000)
+			    onRenderFct(deltaMsec/100, nowMsec/100)
 		    })
 	    })
     }

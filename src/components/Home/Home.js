@@ -24,7 +24,7 @@ const Home =(props)=>{
   // 获取目标方位
   const handleClick = () => {
     // 数据库
-    fetch( `https://fyp21043s1.cs.hku.hk:3001/v1/api/search?source=${id}&destination=${dest}`, { method: "GET"})
+    fetch( `https://fyp21043s1.cs.hku.hk:8080/v1/api/search?source=${id}&destination=${dest}`, { method: "GET"})
     .then(res => res.json())
     .then(data => {
       settingAngle(data.data.Angle);
@@ -48,10 +48,10 @@ const Home =(props)=>{
           <div className="loc">You are now at: location{id}</div>
           <div className="des">What's your destination?</div>
           <select value={dest} onChange={(e)=>(setDest(e.target.value))}>
-            <option value="0">Location 1</option>
-            <option value="1">Location 2</option>
-            <option value="2">Location 3</option>
-            <option value="3">Location 4</option>
+            <option value="1">Location 1</option>
+            <option value="2">Location 2</option>
+            <option value="3">Location 3</option>
+            <option value="4">Location 4</option>
           </select>
 
           <Button onClick={handleClick}>Show direction</Button>

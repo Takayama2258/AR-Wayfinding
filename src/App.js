@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import {
+  HashRouter,
   BrowserRouter as Router,
   Switch,
   Route,
@@ -19,7 +20,7 @@ function App(props){
   }
 
   return(
-    <Router>
+    <HashRouter>
       <Switch>
         <Route exact path="/">
           <Dashboard />
@@ -33,7 +34,7 @@ function App(props){
           <Camera /></AppContext.Provider>
         </Route>
       </Switch>
-    </Router>
+    </HashRouter>
   );
 }
 
