@@ -4,6 +4,7 @@ import { CameraOutlined} from '@ant-design/icons';
 import React, {useContext, useState} from "react";
 
 import { AppContext } from "../AppContext";
+import Picture from '../Picture';
 import ReactDOM from 'react-dom';
 
 import {
@@ -19,6 +20,7 @@ const Home =(props)=>{
   const { id } = useParams();
 
   const [dest, setDest] = useState('0');
+  const [show, setShow] = useState({visibility:'hidden'});
   const {angle, settingAngle} = useContext(AppContext);
 
   // 获取目标方位
@@ -33,6 +35,8 @@ const Home =(props)=>{
     .catch((error) => {
       console.error("Error fetching data: ", error);
     })
+
+    setShow({});
   };
 
   return (
@@ -46,7 +50,7 @@ const Home =(props)=>{
         <div className="site-layout-content">
           <div className="text">Please scan a road sign to get navigation!</div>
           <div className="loc">You are now at: location{id}</div>
-          <div className="des">What's your destination?</div>
+          <div className="des">Where is your destination?</div>
           <select value={dest} onChange={(e)=>(setDest(e.target.value))}>
             <option value="1">Location 1</option>
             <option value="2">Location 2</option>
@@ -56,9 +60,15 @@ const Home =(props)=>{
 
           <Button onClick={handleClick}>Show direction</Button>
 
-          <div>The direction is: {angle}</div>
+          <div style = {show}>
+            The direction is: {angle}
+            <div className="container">
+            <Picture source={id} destination={dest}></Picture>
+            </div>
+          </div>
 
-          <div className="camera"><Button icon={<CameraOutlined />} onClick={()=>{props.history.push("/camera")}}></Button></div>
+          {/* <div className="camera"><Button icon={<CameraOutlined />} onClick={()=>{props.history.push("/camera")}}></Button></div> */}
+          <div className="camera"><Button icon={<CameraOutlined />} onClick={()=>{window.location.href = `www.arcamera.com/?angle=${angle}`}}></Button></div>
         </div>
       </Content>
           

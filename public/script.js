@@ -1,9 +1,31 @@
+function GetURLParameter(sParam){
+  var sPageURL = window.location.search.substring(1);
+  var sURLVariables = sPageURL.split('&');
+  for (var i = 0; i < sURLVariables.length; i++) 
+  {
+      var sParameterName = sURLVariables[i].split('=');
+      if (sParameterName[0] == sParam) 
+      {
+          return sParameterName[1];
+      }
+  }
+}
+
+var angle = GetURLParameter('angle');
+if (!angle){angle = 0}
+
+// sample url: https://localhost:3000/?angle=1.51
+// angle 是弧度制
+// angle = 0 朝前
+// angle = 1.51 朝右
+
+
 AFRAME.registerComponent("listener", {
     init: function() {
       this.target = document.querySelector('#target');
       this.prevPosition = null;
       this.prevRotation = null;
-      this.initRotation = new THREE.Vector3( -1.51, 1.51, 0.3 );
+      this.initRotation = new THREE.Vector3( -1.51, parseFloat(angle), 0.2 );
     },
    tick: function() {
      if (this.el.object3D.visible) {
@@ -32,4 +54,4 @@ AFRAME.registerComponent("listener", {
         this.prevRotation = null;
       }
    }
- })
+ });
