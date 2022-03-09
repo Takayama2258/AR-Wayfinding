@@ -1,21 +1,21 @@
-import React, {useState, useEffect} from "react";
+import React from "react";
 import $ from 'jquery' ;
 import locationIcon from '../images/location.png';
 import locationIconNew from '../images/locationNew.png'
-// import ControlBar from './ControlBar';
-import {Button} from "antd";
 
-var labels = [];
-var connectionsMap = new Map();
+const { forwardRef, useImperativeHandle } = React;
 
-function Picture(props){
+const Picture = forwardRef((props, ref) => {
 
   // get source & dest
   const {source, destination} = props;
 
-  //用setLabel来更新label，否侧无法实现页面状态更新
-  const [label, setLabel] = useState([]);
-  const [connectionMap, setConnectionMap] = useState(new Map());
+  useImperativeHandle(ref, () => ({
+    onFetchLabel(){
+      console.log('onFetchLabel');
+      fetchInitialLabels();
+    }
+    }));
 
   function onFetchLabel() {
     fetchInitialLabels();
@@ -23,15 +23,18 @@ function Picture(props){
   }
   //initialize fetch
   function fetchInitialLabels(){
-    fetch( `http://localhost:3000/v1/api/nodes`)
+    fetch( `https://fyp21043s1.cs.hku.hk:8080/v1/api/path?source=${source}&destination=${destination}`)
     .then(res => res.json())
     .then(data => {
-      let nodes = data['data']['Nodes'];
+      console.log(data['data']['Path']);
+      let nodes = data['data']['Path'];
+      // let nodes = [{Id: 1, IntersectionalAngle: 0, Latitude: 0, Longitude: 0},{Id: 2, IntersectionalAngle: 0, Latitude: 1, Longitude: 1}];
       let prevNode;
       for (let label in nodes){
         let imgSpot = {x: nodes[label].Latitude, y:nodes[label].Longitude}
         drawInitialLabels(imgSpot);
         if(prevNode){
+          console.log('prevNode:',prevNode)
           createPoints(prevNode,imgSpot);
         }
         prevNode=imgSpot;
@@ -46,54 +49,32 @@ function Picture(props){
     let imgEl = document.getElementById("imageId");
     let img_x = locationLeft(imgEl);
     let img_y = locationTop(imgEl);
-    var displaySpot = {x: imgSpot.x+img_x, y: imgEl.offsetHeight-imgSpot.y+img_y};
+    let img_width = imgEl.offsetWidth;
+    let img_height = imgEl.offsetHeight;
+    var displaySpot = {x: imgSpot.x*img_width+img_x, y: imgEl.offsetHeight-imgSpot.y*img_height+img_y};
     addHotspot(displaySpot,imgSpot,true);
   }
 
-  // function onFetchConnection() {
-  //   fetchInitialConnections();
-  // }
-
-  // function fetchInitialConnections() {
-  //   fetch( `http://localhost:3000/v1/api/connections`)
-  //   .then(res => res.json())
-  //   .then(data => {
-
-  //     let connectionList = data['data']['Connections'];
-  //     for (let connection in connectionList){
-  //       //draw initial connections
-  //       createPoints(connectionList[connection].Source,connectionList[connection].Destination);
-  //       if (connectionsMap.has(connectionList[connection].Source)){
-  //         connectionsMap.set(connectionList[connection].Source,connectionsMap.get(connectionList[connection].Source).push(connectionList[connection].Destination));
-  //       }else{
-  //         connectionsMap.set(connectionList[connection].Source,[connectionList[connection].Destination]);
-  //       }
-  //     }
-  //     setConnectionMap(connectionsMap);
-  //   })
-  //   .catch((error) => {
-  //     console.error("Error fetching data: ", error);
-  //   })
-  // }
 
   //draw connections
   function createPoints(source,destination) {
     let firstPoint = null;
     let secondPoint = null;
     let imgEl = document.getElementById("imageId");
+    let img_width = imgEl.offsetWidth;
+    let img_height = imgEl.offsetHeight;
     let img_x = locationLeft(imgEl);
     let img_y = locationTop(imgEl);
-    if (firstPoint === null) {
+    if (!firstPoint) {
       firstPoint = {};
-      firstPoint.xPoint = source['Latitude']+img_x;
-      firstPoint.YPoint = imgEl.offsetHeight-source['Longitude']+img_y;
+      firstPoint.xPoint = source['x']*img_width+img_x;
+      firstPoint.YPoint = imgEl.offsetHeight-source['y']*img_height+img_y;
     }
-    if (secondPoint === null) {
+    if (!secondPoint) {
       secondPoint = {};
-      secondPoint.xPoint = destination['Latitude']+img_x;
-      secondPoint.YPoint = imgEl.offsetHeight-destination['Longitude']+img_y;
+      secondPoint.xPoint = destination['x']*img_width+img_x;
+      secondPoint.YPoint = imgEl.offsetHeight-destination['y']*img_height+img_y;
     }
-
     if (firstPoint !== null && secondPoint !== null) {
       let lineLength = calcLine(firstPoint, secondPoint);
       let angle = getAngle(
@@ -171,11 +152,11 @@ function Picture(props){
 
     let imgEl = document.getElementById("imageId");
     let height = $('imageId').prop("height")
-    console.log(imgEl.offsetHeight);
 
     let img_x = locationLeft(imgEl);
     let img_y = locationTop(imgEl);
-    var imgSpot = {x: xPage-img_x, y:imgEl.offsetHeight-yPage+img_y}
+    var imgSpot = {x: xPage-img_x, y:imgEl.offsetHeight-yPage+img_y};
+    console.log(img_x, ':::', img_y);
 
     addHotspot(displaySpot,imgSpot,false);
   }
@@ -217,17 +198,6 @@ function Picture(props){
         + ')" />';
     return imgEle
   }
-  // function createCoordinateElement(displaySpot,imgSpot) {
-  //   var x = displaySpot.x -30;
-  //   var y = displaySpot.y ;
-  //   var width = 30;
-  //   var height = 30;
-  //   let textEle = '<text ' + ' class="' + 'coordinate' + '" '+' style="top: '
-  //       + y + 'px; left: ' + x + 'px; width: ' + width + 'px; height: ' + height + 'px;  position: absolute; cursor: pointer;"'
-  //       + ')" >{'+imgSpot.x+','+imgSpot.y+'}</text>';
-  //   console.log(textEle);
-  //   return textEle
-  // }
 
   // 添加自定义内容
   function addHotspot(displaySpot,imgSpot,fetchType) {
@@ -246,6 +216,6 @@ function Picture(props){
     </div>
     </>
   )
-}
+});
 
 export default Picture

@@ -1,7 +1,7 @@
 import { Layout, Button } from 'antd';
 import './Home.css';
 import { CameraOutlined} from '@ant-design/icons';
-import React, {useContext, useState} from "react";
+import React, {useContext, useState, useRef} from "react";
 
 import { AppContext } from "../AppContext";
 import Picture from '../Picture';
@@ -23,6 +23,8 @@ const Home =(props)=>{
   const [show, setShow] = useState({visibility:'hidden'});
   const {angle, settingAngle} = useContext(AppContext);
 
+  const childRef = useRef();
+
   // 获取目标方位
   const handleClick = () => {
     // 数据库
@@ -37,6 +39,7 @@ const Home =(props)=>{
     })
 
     setShow({});
+    childRef.current.onFetchLabel();
   };
 
   return (
@@ -63,7 +66,7 @@ const Home =(props)=>{
           <div style = {show}>
             The direction is: {angle}
             <div className="container">
-            <Picture source={id} destination={dest}></Picture>
+            <Picture source={id} destination={dest} ref={childRef}></Picture>
             </div>
           </div>
 
