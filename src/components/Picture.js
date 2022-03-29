@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import $ from 'jquery' ;
 import locationIcon from '../images/location.png';
 import locationIconNew from '../images/locationNew.png'
@@ -8,56 +8,90 @@ const { forwardRef, useImperativeHandle } = React;
 const Picture = forwardRef((props, ref) => {
 
   // get source & dest
-  const {source, destination} = props;
+  const {mapId, source, destination} = props;
+  const [mapUrl, setMapUrl] = useState();
 
   useImperativeHandle(ref, () => ({
     onFetchLabel(){
-      console.log('onFetchLabel');
       fetchInitialLabels();
     }
     }));
 
-  function onFetchLabel() {
-    fetchInitialLabels();
-    drawInitialLabels();
-  }
   //initialize fetch
   function fetchInitialLabels(){
-    fetch( `https://fyp21043s1.cs.hku.hk:8080/v1/api/path?source=${source}&destination=${destination}`)
+    console.log('fetchLabels:::')
+    $('.path').remove();
+    if(mapUrl){
+      fetch( `https://fyp21043s1.cs.hku.hk:8080/v1/api/path?source=${source}&destination=${destination}`)
     .then(res => res.json())
     .then(data => {
       console.log(data['data']['Path']);
       let nodes = data['data']['Path'];
-      // let nodes = [{Id: 1, IntersectionalAngle: 0, Latitude: 0, Longitude: 0},{Id: 2, IntersectionalAngle: 0, Latitude: 1, Longitude: 1}];
+      let isFloor = data['data']['IsSameFloor'];
+      let Floor = data['data']['Floor'];
       let prevNode;
+      let index = 0;
       for (let label in nodes){
-        let imgSpot = {x: nodes[label].Latitude, y:nodes[label].Longitude}
-        drawInitialLabels(imgSpot);
+        let imgSpot = {x: nodes[label].Longitude, y:nodes[label].Latitude}
+        if(index==0){
+          drawInitialLabels(imgSpot,false);
+        }
+        else{
+          drawInitialLabels(imgSpot,true);
+        }
         if(prevNode){
-          console.log('prevNode:',prevNode)
-          createPoints(prevNode,imgSpot);
+          console.log('prevNode:',index)
+          if(index==1){
+            createPoints(prevNode,imgSpot,true);
+          }
+          else{
+            createPoints(prevNode,imgSpot,false);
+          }
         }
         prevNode=imgSpot;
+        index++;
+      }
+      if(!isFloor){
+        let bubble = `<div style="border: 1px solid #cccccc; border-radius: 5px;">Please go to floor ${Floor} in this way</div>`;
+        $('.container').append(bubble);
       }
     })
     .catch((error) => {
       console.error("Error fetching data: ", error);
     })
+    }
+    else{
+      console.log('picture mapid:::',mapId);
+      fetch( `https://fyp21043s1.cs.hku.hk:8080/v1/admin/map/filter/id?id=${mapId}`)
+      .then(res => res.json())
+      .then(data => {
+        console.log('set url::::',data['data']['Map']['Url']);
+        setMapUrl(data['data']['Map']['Url']);
+      })
+    }
   }
 
-  function drawInitialLabels(imgSpot) {
+  function drawInitialLabels(imgSpot,index) {
     let imgEl = document.getElementById("imageId");
     let img_x = locationLeft(imgEl);
     let img_y = locationTop(imgEl);
     let img_width = imgEl.offsetWidth;
     let img_height = imgEl.offsetHeight;
     var displaySpot = {x: imgSpot.x*img_width+img_x, y: imgEl.offsetHeight-imgSpot.y*img_height+img_y};
-    addHotspot(displaySpot,imgSpot,true);
+    if(index==0){
+      addHotspot(displaySpot,imgSpot,false);
+    }
+    else{
+      addHotspot(displaySpot,imgSpot,true);
+    }
   }
 
+  useEffect(()=>{
+    fetchInitialLabels();
+  },[])
 
   //draw connections
-  function createPoints(source,destination) {
+  function createPoints(source,destination,isArrow) {
     let firstPoint = null;
     let secondPoint = null;
     let imgEl = document.getElementById("imageId");
@@ -83,8 +117,14 @@ const Picture = forwardRef((props, ref) => {
           secondPoint.xPoint,
           secondPoint.YPoint
       );
+      let lineHtmlStr;
+      // if(isArrow){
+      //   lineHtmlStr = `<div style="position:absolute;border-top: 1px solid green;width:${lineLength}px;top:${firstPoint.YPoint}px;left:${firstPoint.xPoint}px;transform:rotate(${angle}deg);transform-origin: 0 50%;"></div>
+      //   <div style="position: absolute; border: green; border-width: 0 3px 3px 0;display: inline-block; top:${secondPoint.YPoint}px; right:${secondPoint.xPoint}px; padding: 3px; transform: rotate(${angle});"/>`;
+      // } 
+        lineHtmlStr = `<div class='path' style="position:absolute;border-top: 1px solid red;width:${lineLength}px;top:${firstPoint.YPoint}px;left:${firstPoint.xPoint}px;transform:rotate(${angle}deg);transform-origin: 0 50%;"></div>`;
+           
       // 设置一个div 宽度为 两点之间的距离，并且以 transform-origin: 0 50% 为圆心旋转，角度已经算出来
-      let lineHtmlStr = `<div style="position:absolute;border-top: 1px solid red;width:${lineLength}px;top:${firstPoint.YPoint}px;left:${firstPoint.xPoint}px;transform:rotate(${angle}deg);transform-origin: 0 50%;"></div>`;
       $('.container').append(lineHtmlStr);
     }
   }
@@ -141,25 +181,7 @@ const Picture = forwardRef((props, ref) => {
 
 
 
-  function handleClick(e) {
-    console.log('clicked');
-    // eslint-disable-next-line no-restricted-globals
-    var xPage = (navigator.appName == 'Netscape') ? e.pageX : event.x + document.body.scrollLeft;
-    // eslint-disable-next-line no-restricted-globals
-    var yPage = (navigator.appName == 'Netscape') ? e.pageY : event.y + document.body.scrollTop;
-    // 当前点击位置
-    var displaySpot = {x: xPage, y: yPage};
-
-    let imgEl = document.getElementById("imageId");
-    let height = $('imageId').prop("height")
-
-    let img_x = locationLeft(imgEl);
-    let img_y = locationTop(imgEl);
-    var imgSpot = {x: xPage-img_x, y:imgEl.offsetHeight-yPage+img_y};
-    console.log(img_x, ':::', img_y);
-
-    addHotspot(displaySpot,imgSpot,false);
-  }
+  
   // 找到元素的屏幕位置
   function locationLeft(element) {
     var offsetTotal = element.offsetLeft;
@@ -193,7 +215,7 @@ const Picture = forwardRef((props, ref) => {
       var src = locationIconNew;
     }
 
-    let imgEle = '<img ' + ' class="' + 'label' + '" '+' src="' + src + '"  style="top: '
+    let imgEle = '<img ' + ' class="path" '+' src="' + src + '"  style="top: '
         + y + 'px; left: ' + x + 'px; width: ' + width + 'px; height: ' + height + 'px;  position: absolute; cursor: pointer;"'
         + ')" />';
     return imgEle
@@ -211,8 +233,8 @@ const Picture = forwardRef((props, ref) => {
 
   return (
     <>
-    <div id="imageId" style={{ width:'100%',height:'100%'}} onClick={handleClick}>
-      <img alt="map" src="https://innowings.engg.hku.hk/content/uploads/2020/06/LG.png" style={{width:'100%'}}/>
+    <div id="imageId" style={{ width:'100%',height:'100%'}}>
+      <img alt="map" src={mapUrl} style={{width:'100%'}}/>
     </div>
     </>
   )

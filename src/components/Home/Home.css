@@ -15,3 +15,24 @@
     margin-left: 155px;
     margin-top: 50px;
 }
+
+.text {
+    margin: 5px 0;
+}
+
+.smallText {
+    font-size: smaller;
+}
+
+.rightText {
+    margin-top: 10px;
+    text-align: right;
+}
+
+.button{
+    margin: 5px auto;
+}
+
+.select {
+    max-width: 200px;
+}
