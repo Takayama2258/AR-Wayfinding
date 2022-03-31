@@ -71,8 +71,11 @@ const Home =(props)=>{
     fetch( `https://fyp21043s1.cs.hku.hk:8080/v1/api/search?source=${id}&destination=${dest}`, { method: "GET"})
     .then(res => res.json())
     .then(data => {
-      settingAngle(data['data']['Angle']);
-        console.log(data.data.Angle);
+      let newAngle = data.data.Angle;
+      newAngle= 1.57-newAngle/57.3;
+      settingAngle(newAngle);
+      console.log('angle::::',data.data.Angle);
+      console.log('newAngle:::', newAngle)
     })
     .catch((error) => {
       console.error("Error fetching data: ", error);
@@ -135,24 +138,20 @@ const Home =(props)=>{
           <div className="text">You are now at: {source}</div>
           <div className="text">Where is your destination?</div>
           <select placeholder={'please select a destination'} value={dest} onChange={(e)=>(setDest(e.target.value))}>
+            <option value={-1}>please select a destination</option>
             {list.map((option) => (
               <option key={option.Id} value={option.Id}>{option.Name}</option>
             ))}
           </select>
           <Button className='button' onClick={handleClick}>Show direction</Button>
-          {/* <div style = {show}>
-            The direction is: {angle}
-          </div> */}
           <div className='rightText' style={{visibility: show}}>
           <img style={{width:'13px'}}  src={locationIconNew}></img><span className='smallText'>current location</span>
-          
           </div>
           <div className="container">
             <Picture mapId={mapId} source={id} destination={dest} ref={childRef}></Picture>
           </div>
 
-          {/* <div className="camera"><Button icon={<CameraOutlined />} onClick={()=>{props.history.push("/camera")}}></Button></div> */}
-          <div className="camera"><Button icon={<CameraOutlined />} onClick={()=>{window.location.href = `www.arcamera.com/?angle=${angle}`}}></Button></div>
+          <div className="camera"><Button icon={<CameraOutlined />} onClick={()=>{window.location.href = `https://fyp21043s1.cs.hku.hk:5999/?angle=${angle}`}}></Button></div>
         </div>
       </div>
           

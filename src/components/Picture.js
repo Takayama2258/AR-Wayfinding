@@ -21,7 +21,7 @@ const Picture = forwardRef((props, ref) => {
   function fetchInitialLabels(){
     console.log('fetchLabels:::')
     $('.path').remove();
-    if(mapUrl){
+    if(mapUrl && destination >= 0){
       fetch( `https://fyp21043s1.cs.hku.hk:8080/v1/api/path?source=${source}&destination=${destination}`)
     .then(res => res.json())
     .then(data => {
@@ -52,7 +52,7 @@ const Picture = forwardRef((props, ref) => {
         index++;
       }
       if(!isFloor){
-        let bubble = `<div style="border: 1px solid #cccccc; border-radius: 5px;">Please go to floor ${Floor} in this way</div>`;
+        let bubble = `<div class='path' style="border: 1px solid #cccccc; border-radius: 5px;">Please go to floor ${Floor} in this way</div>`;
         $('.container').append(bubble);
       }
     })
