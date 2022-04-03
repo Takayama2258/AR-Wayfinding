@@ -4,10 +4,8 @@ import { CameraOutlined} from '@ant-design/icons';
 import React, {useContext, useState, useRef, useEffect} from "react";
 import { AppContext } from "../AppContext";
 import Picture from '../Picture';
-import ReactDOM from 'react-dom';
 import localStorage from "localStorage";
 
-import locationIcon from '../../images/location.png';
 import locationIconNew from '../../images/locationNew.png'
 
 import {
@@ -16,15 +14,14 @@ import {
 } from "react-router-dom";
 
 
-
-
-const Home =(props)=>{
+const Home =()=>{
 
   const { id } = useParams();
 
   const [source, setSource] = useState();
   const [dest, setDest] = useState();
   const [mapId, setMapId] = useState();
+  const [building, setBuilding] = useState();
   const [show, setShow] = useState('hidden');
   const [list, setList] = useState([]);
   const {angle, settingAngle} = useContext(AppContext);
@@ -35,7 +32,6 @@ const Home =(props)=>{
     fetch( `https://fyp21043s1.cs.hku.hk:8080/v1/admin/map/nodeId?id=${id}`, { method: "GET"})
     .then(res => res.json())
     .then(data => {
-      console.log('setmapid::',data.data.Id);
       setMapId(data.data.Id);
     })
     .catch((error) => {
@@ -43,8 +39,19 @@ const Home =(props)=>{
     })
   }
 
+  const fetchBuilding = () => {
+    fetch( `https://fyp21043s1.cs.hku.hk:8080/v1/admin/map/building?id=${id}`, { method: "GET"})
+    .then(res => res.json())
+    .then(data => {
+      setBuilding(data.data.Name);
+    })
+    .catch((error) => {
+      console.error("Error fetching data: ", error);
+    })
+  }
+
   const fetchList = () => {
-    fetch( `https://fyp21043s1.cs.hku.hk:8080/v1/api/nodes/map?id=${mapId}`, { method: "GET"})
+    fetch( `https://fyp21043s1.cs.hku.hk:8080/v1/api/nodes/building?name=${building}`, { method: "GET"})
     .then(res => res.json())
     .then(data => {
       let nodes = data['data']['Nodes'];
@@ -57,7 +64,6 @@ const Home =(props)=>{
           newList.push({Id:nodes[label]['Id'],Name:nodes[label]['NameEnglish']});
         }
       }
-      console.log(newList)
       setList(newList);
     })
     .catch((error) => {
@@ -65,17 +71,14 @@ const Home =(props)=>{
     })
   }
 
-  // 获取目标方位
   const handleClick = () => {
-    // 数据库
+    // Database
     fetch( `https://fyp21043s1.cs.hku.hk:8080/v1/api/search?source=${id}&destination=${dest}`, { method: "GET"})
     .then(res => res.json())
     .then(data => {
       let newAngle = data.data.Angle;
       newAngle= 1.57-newAngle/57.3;
       settingAngle(newAngle);
-      console.log('angle::::',data.data.Angle);
-      console.log('newAngle:::', newAngle)
     })
     .catch((error) => {
       console.error("Error fetching data: ", error);
@@ -111,17 +114,20 @@ const Home =(props)=>{
 
   useEffect(()=>{
     fetchMap();
+    fetchBuilding();
   },[]);
 
   useEffect(()=>{
     childRef.current.onFetchLabel();
-    fetchList();
   },[mapId]);
+
+  useEffect(()=>{
+    fetchList();
+  },[building])
 
   useEffect(()=>{
     let destination = localStorageGet('destination');
     if(destination){
-      console.log('setdest:::',destination);
       setDest(destination);
     }
   },[])
@@ -150,7 +156,7 @@ const Home =(props)=>{
           <div className="container">
             <Picture mapId={mapId} source={id} destination={dest} ref={childRef}></Picture>
           </div>
-
+          {/* redirect to AR webpage with angle as url parameter */}
           <div className="camera"><Button icon={<CameraOutlined />} onClick={()=>{window.location.href = `https://fyp21043s1.cs.hku.hk:5999/?angle=${angle}`}}></Button></div>
         </div>
       </div>

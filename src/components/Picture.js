@@ -19,13 +19,11 @@ const Picture = forwardRef((props, ref) => {
 
   //initialize fetch
   function fetchInitialLabels(){
-    console.log('fetchLabels:::')
     $('.path').remove();
     if(mapUrl && destination >= 0){
       fetch( `https://fyp21043s1.cs.hku.hk:8080/v1/api/path?source=${source}&destination=${destination}`)
     .then(res => res.json())
     .then(data => {
-      console.log(data['data']['Path']);
       let nodes = data['data']['Path'];
       let isFloor = data['data']['IsSameFloor'];
       let Floor = data['data']['Floor'];
@@ -40,7 +38,6 @@ const Picture = forwardRef((props, ref) => {
           drawInitialLabels(imgSpot,true);
         }
         if(prevNode){
-          console.log('prevNode:',index)
           if(index==1){
             createPoints(prevNode,imgSpot,true);
           }
@@ -61,11 +58,9 @@ const Picture = forwardRef((props, ref) => {
     })
     }
     else{
-      console.log('picture mapid:::',mapId);
       fetch( `https://fyp21043s1.cs.hku.hk:8080/v1/admin/map/filter/id?id=${mapId}`)
       .then(res => res.json())
       .then(data => {
-        console.log('set url::::',data['data']['Map']['Url']);
         setMapUrl(data['data']['Map']['Url']);
       })
     }
@@ -118,18 +113,12 @@ const Picture = forwardRef((props, ref) => {
           secondPoint.YPoint
       );
       let lineHtmlStr;
-      // if(isArrow){
-      //   lineHtmlStr = `<div style="position:absolute;border-top: 1px solid green;width:${lineLength}px;top:${firstPoint.YPoint}px;left:${firstPoint.xPoint}px;transform:rotate(${angle}deg);transform-origin: 0 50%;"></div>
-      //   <div style="position: absolute; border: green; border-width: 0 3px 3px 0;display: inline-block; top:${secondPoint.YPoint}px; right:${secondPoint.xPoint}px; padding: 3px; transform: rotate(${angle});"/>`;
-      // } 
         lineHtmlStr = `<div class='path' style="position:absolute;border-top: 1px solid red;width:${lineLength}px;top:${firstPoint.YPoint}px;left:${firstPoint.xPoint}px;transform:rotate(${angle}deg);transform-origin: 0 50%;"></div>`;
            
-      // 设置一个div 宽度为 两点之间的距离，并且以 transform-origin: 0 50% 为圆心旋转，角度已经算出来
       $('.container').append(lineHtmlStr);
     }
   }
   function calcLine(firstPoint, secondPoint) {
-    // 计算出两个点之间的距离
     let line = Math.sqrt(
         Math.pow(firstPoint.xPoint - secondPoint.xPoint, 2) +
         Math.pow(firstPoint.YPoint - secondPoint.YPoint, 2)
@@ -137,43 +126,34 @@ const Picture = forwardRef((props, ref) => {
     return line;
   }
   function getAngle(x1, y1, x2, y2) {
-    // 获得人物中心和鼠标坐标连线，与y轴正半轴之间的夹角
     var x = x1 - x2;
     var y = y1 - y2;
     var z = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
     var cos = y / z;
-    var radina = Math.acos(cos); // 用反三角函数求弧度
-    var angle = 180 / (Math.PI / radina); // 将弧度转换成角度
+    var radina = Math.acos(cos); 
+    var angle = 180 / (Math.PI / radina); 
     if (x2 > x1 && y2 === y1) {
-      // 在x轴正方向上
       angle = 0;
     }
     if (x2 > x1 && y2 < y1) {
-      // 在第一象限;
       angle = angle - 90;
     }
     if (x2 === x1 && y1 > y2) {
-      // 在y轴正方向上
       angle = -90;
     }
     if (x2 < x1 && y2 < y1) {
-      // 在第二象限
       angle = 270 - angle;
     }
     if (x2 < x1 && y2 === y1) {
-      // 在x轴负方向
       angle = 180;
     }
     if (x2 < x1 && y2 > y1) {
-      // 在第三象限
       angle = 270 - angle;
     }
     if (x2 === x1 && y2 > y1) {
-      // 在y轴负方向上
       angle = 90;
     }
     if (x2 > x1 && y2 > y1) {
-      // 在四象限
       angle = angle - 90;
     }
     return angle;
@@ -181,8 +161,6 @@ const Picture = forwardRef((props, ref) => {
 
 
 
-  
-  // 找到元素的屏幕位置
   function locationLeft(element) {
     var offsetTotal = element.offsetLeft;
     var scrollTotal = 0; // element.scrollLeft but we dont want to deal with scrolling - already in page coords
@@ -193,7 +171,6 @@ const Picture = forwardRef((props, ref) => {
     return offsetTotal + scrollTotal;
   }
 
-// 找到元素的屏幕位置
   function locationTop(element) {
     var offsetTotal = element.offsetTop;
     var scrollTotal = 0; // element.scrollTop but we dont want to deal with scrolling - already in page coords
@@ -221,14 +198,9 @@ const Picture = forwardRef((props, ref) => {
     return imgEle
   }
 
-  // 添加自定义内容
   function addHotspot(displaySpot,imgSpot,fetchType) {
     let imgEle = createImagElement(displaySpot,fetchType);
-    // let textEle = createCoordinateElement(displaySpot,imgSpot);
-    // labels.push('{'+imgSpot.x+','+imgSpot.y+'}');
     $('.container').append(imgEle);
-    // $('.container').append(textEle);
-    // setLabel([...labels]);
   }
 
   return (
