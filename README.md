@@ -9,18 +9,17 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 The homepage of the app. The index is the id of current position.
 
-### ./
+### /
 
 This page is for testing only. You can manually assign current location from the Dashboard.
 
-### redirct
+### other
 
-When click the camera-shaped button, the app will redirct users to the AR interface. Since the AR API we use (AR.js) does not support React, it is built with html separately.
-
-  
-
+When click the camera-shaped button, the app will redirct users to the AR interface. Since the AR API we use (AR.js) does not support React, it is built with html separately.  
+<br>  
+   
 ## Instructions for usage
-### online URL
+### testing URL
 The project has been built in online environment. To test it: https://fyp21043s1.cs.hku.hk:8443/#/home/{index} where index is the id of current position.
 
 ### scan QR code
@@ -37,10 +36,10 @@ Allow the app to open device camera and put the hero marker within the camera. A
 
 ### sample of the marker
 This is a sample QR code. It contains the link to our website (with index of current position) and the hiro marker for AR navigation.
-![image](./public/sample%20QR%20code.png)
-
-  
-
+<img src="./public/sample%20QR%20code.png" width="30%" height="30%">
+<br><br>  
+   
+   
 ## Available Scripts
 
 In the project directory, you can run:
