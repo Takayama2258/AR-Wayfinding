@@ -1,4 +1,4 @@
-# Getting Started with Create React App
+# Getting Started with AR-Wayfinding App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
@@ -15,9 +15,9 @@ This page is for testing only. You can manually assign current location from the
 
 ### redirct
 
-When click the camera-shaped button, the app will redirct users to the AR interface. Since the AR API we use (AR.js) does not support React, it is built with html seperately.
+When click the camera-shaped button, the app will redirct users to the AR interface. Since the AR API we use (AR.js) does not support React, it is built with html separately.
 
-
+  
 
 ## Instructions for usage
 ### online URL
@@ -39,7 +39,7 @@ Allow the app to open device camera and put the hero marker within the camera. A
 This is a sample QR code. It contains the link to our website (with index of current position) and the hiro marker for AR navigation.
 ![image](./public/sample%20QR%20code.png)
 
-
+  
 
 ## Available Scripts
 
