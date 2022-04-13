@@ -2,6 +2,45 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+
+
+## Route
+### /home/{index}
+
+The homepage of the app. The index is the id of current position.
+
+### ./
+
+This page is for testing only. You can manually assign current location from the Dashboard.
+
+### redirct
+
+When click the camera-shaped button, the app will redirct users to the AR interface. Since the AR API we use (AR.js) does not support React, it is built with html seperately.
+
+
+
+## Instructions for usage
+### online URL
+The project has been built in online environment. To test it: https://fyp21043s1.cs.hku.hk:8443/#/home/{index} where index is the id of current position.
+
+### scan QR code
+
+User should be open to access the website through QR code which contains the information of website URL and the index of current position.
+
+### navigation
+
+After selecting the destination, a preview route will be automatically presented on the homepage. 
+When click the camera-shaped button, the app will redirct users to the AR interface.
+
+### AR navigation
+Allow the app to open device camera and put the hero marker within the camera. A 3d arrow will be shown upon the marker.
+
+### sample of the marker
+This is a sample QR code. It contains the link to our website (with index of current position) and the hiro marker for AR navigation.
+![image](./public/sample%20QR%20code.png)
+
+
+
 ## Available Scripts
 
 In the project directory, you can run:
@@ -39,38 +78,6 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-## Route
-### /home/{index}
-
-The homepage of the app. The index is the id of current position.
-
-### ./
-
-This page is for testing only. You can manually assign current location from the Dashboard.
-
-### redirct
-
-When click the camera-shaped button, the app will redirct users to the AR interface. Since the AR API we use (AR.js) does not support React, it is built with html seperately.
-
-
-## Instructions for usage
-### online URL
-The project has been built in online environment. To test it: https://fyp21043s1.cs.hku.hk:8443/#/home/1
-
-### scan QR code
-
-User should be open to access the website through QR code which contains the information of website URL and the index of current position.
-
-### navigation
-
-After selecting the destination, a preview route will be automatically presented on the homepage. 
-When click the camera-shaped button, the app will redirct users to the AR interface.
-
-### AR navigation
-Allow the app to open device camera and put the hero marker within the camera. A 3d arrow will be shown upon the marker.
-
-### sample of the marker
-This is a sample QR code. It contains the link to our website (with index of current position) and the hiro marker for AR navigation.
 
 ## Learn More
 
